@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.caassandra_lee_2939561_exercisetracker">
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    
 
     <application
         android:allowBackup="true"
@@ -8,7 +12,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Caassandra_Lee_2939561_ExerciseTracker">
+        android:theme="@style/Theme.Caassandra_Lee_2939561_ExerciseTracker"
+        android:requestLegacyExternalStorage="true">
         <activity
             android:name=".Track"
             android:label="@string/app_name"
