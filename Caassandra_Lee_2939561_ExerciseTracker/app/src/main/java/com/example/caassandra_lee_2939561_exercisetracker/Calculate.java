@@ -60,14 +60,14 @@ public class Calculate extends View {
 
         //Location list = (Location) Track.getInstance().loc.lastIndexOf();
 
-       /* for (int i = 0; i < Track.getInstance().loc.size(); i++) {
+        for (int i = 0; i < Track.getInstance().loc.size(); i++) {
             Location previous = Track.getInstance().loc.get(i);
             Location current = Track.getInstance().loc.get(i + 1);
 
 
             double dist = previous.distanceTo(current);
             distance.setText(": " + dist);
-        }*/
+        }
 
 
     }
@@ -75,20 +75,20 @@ public class Calculate extends View {
     public void calculateSpeed(Location location){
 
         //utilise our second arraylist from Track activity dedicated to speed
-      /*  for (float f: Track.getInstance().spd) {
+        for (float f: Track.getInstance().spd) {
 
             float totalSpeed =+ f;
             //Get average then set it to text;
             speed.setText("Speed: " + totalSpeed / Track.getInstance().spd.size());
         }
-*/
+
     }
 
     public void calculateTime(Location location){
 
        // long time = location.getTime();
 
-       /* for (long l: Track.getInstance().t) {
+        for (long l: Track.getInstance().t) {
             long time = +l;
 
             //convert to minutes;
@@ -96,7 +96,7 @@ public class Calculate extends View {
 
             timeTaken.setText("Time Taken: " + time);
         }
-*/
+
 
     }
 
@@ -104,7 +104,7 @@ public class Calculate extends View {
 
        // double alt = Track.getInstance().alt;
 
-       /* for (double a: Track.getInstance().alt) {
+        for (double a: Track.getInstance().alt) {
             //Get the minimum value
             double min = Track.getInstance().alt.indexOf(Collections.min(Track.getInstance().alt));
             MinimumAltitude.setText("Minimum Altitude: " + min);
@@ -112,7 +112,7 @@ public class Calculate extends View {
             double max = Track.getInstance().alt.indexOf(Collections.max(Track.getInstance().alt));
             MinimumAltitude.setText("Maximum Altitude: " + max);
 
-        }*/
+        }
     }
 
 
