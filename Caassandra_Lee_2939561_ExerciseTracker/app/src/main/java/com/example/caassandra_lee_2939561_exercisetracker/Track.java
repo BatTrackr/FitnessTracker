@@ -49,6 +49,7 @@ public class Track extends AppCompatActivity implements View.OnClickListener {
     FusedLocationProviderClient locateClient;
     LocationRequest request;
     Boolean trackerStarted = false;
+    Calculate calculate;
 
 
     String folder = "GPStracks" ;
@@ -88,6 +89,10 @@ public class Track extends AppCompatActivity implements View.OnClickListener {
             }
         };
 
+        calculate.calculateDistance();
+        calculate.calculateSpeed();
+        calculate.calculateTime();
+        calculate.calculateAltitude();
     }
 
     public Track(){

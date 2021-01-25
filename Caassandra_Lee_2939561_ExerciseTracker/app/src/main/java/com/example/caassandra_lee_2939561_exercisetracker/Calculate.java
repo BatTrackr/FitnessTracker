@@ -72,7 +72,7 @@ public class Calculate extends View {
 
     }
 
-    public void calculateSpeed(Location location){
+    public void calculateSpeed(){
 
         //utilise our second arraylist from Track activity dedicated to speed
         for (float f: Track.getInstance().spd) {
@@ -84,7 +84,7 @@ public class Calculate extends View {
 
     }
 
-    public void calculateTime(Location location){
+    public void calculateTime(){
 
        // long time = location.getTime();
 
@@ -100,7 +100,7 @@ public class Calculate extends View {
 
     }
 
-    public void calculateAltitude(Location location){
+    public void calculateAltitude(){
 
        // double alt = Track.getInstance().alt;
 
