@@ -31,31 +31,28 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Track extends AppCompatActivity implements View.OnClickListener {
 
     private static final int REQUEST_LOCATION_PERMISSION = 1;
     Button Track;
-    double lat;
-    double lon;
-    double alt;
-    double time;
-    TextView speed;
-    TextView timeTaken;
-    TextView altitude;
-    TextView distance;
+
+    List<Double> alt = new ArrayList<>();
+    List<Long> t = new ArrayList<>();
+    List<Float> spd = new ArrayList<>();
     int i = 0;
+    private static Track tracker = null;
+    List<Location> loc = new ArrayList<>();
     private LocationCallback callback;
     FusedLocationProviderClient locateClient;
     LocationRequest request;
     Boolean trackerStarted = false;
 
 
-    BufferedWriter writer;
-    String folder = "GPStracks";
+    String folder = "GPStracks" ;
     File GPS;
-    String header = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><gpx xmlns=\"http://www.topografix.com/GPX/1/1\" creator=\"MapSource 6.15.5\" version=\"1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"  xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\"><trk>\n";
-    String name = "Latitude: %1$.4f \n Longitude: %2$.4f\n Timestamp: %3$tr";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,30 +60,37 @@ public class Track extends AppCompatActivity implements View.OnClickListener {
         setContentView(R.layout.activity_main);
 
         Track = findViewById(R.id.track);
-        timeTaken = findViewById(R.id.Time);
-        speed = findViewById(R.id.Speed);
-        distance = findViewById(R.id.Distance);
-        altitude = findViewById(R.id.Alt);
+        Calculate custom = findViewById(R.id.Graph);
 
         request = new LocationRequest();
         locateClient = LocationServices.getFusedLocationProviderClient(this);
 
-        request.setInterval(1000000);
+
+        request.setInterval(12000);
         request.setPriority(request.PRIORITY_BALANCED_POWER_ACCURACY);
         Track.setOnClickListener(this);
-
         callback = new LocationCallback() {
 
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 super.onLocationResult(locationResult);
-                updateUI();
-                for (Location location : locationResult.getLocations()){
+                for (Location location : locationResult.getLocations()) {
                     //update the file with our callback
-                    updateFile(location);
+                    updateFile(locationResult.getLastLocation());
+
+                    //Add data to each list to be used in Calculate
+                    loc.add(i, location);
+                    spd.add(i, location.getSpeed());
+                    t.add(i, location.getTime());
+                    alt.add(i, location.getAltitude());
+
                 }
             }
         };
+
+    }
+
+    public Track(){
 
     }
 
@@ -98,7 +102,7 @@ public class Track extends AppCompatActivity implements View.OnClickListener {
             trackerStarted = true;
             i++;
         } else if (i == 1 && trackerStarted) {
-            stopTracker(writer);
+            stopTracker();
             Toast.makeText(Track.this, "Tracker Stopped", Toast.LENGTH_SHORT).show();
             trackerStarted = false;
             i = 0;
@@ -133,17 +137,35 @@ public class Track extends AppCompatActivity implements View.OnClickListener {
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-           locateClient.requestLocationUpdates(request, callback, null);
+            locateClient.requestLocationUpdates(request, callback, null);
+            locateClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
 
+                        updateFile(location);
+
+
+                    } else {
+                        ActivityCompat.requestPermissions(Track.this, new String[]
+                                        {Manifest.permission.ACCESS_FINE_LOCATION},
+                                REQUEST_LOCATION_PERMISSION);
+                    }
+                }
+            });
+        } else {
+            ActivityCompat.requestPermissions(Track.this, new String[]
+                            {Manifest.permission.ACCESS_FINE_LOCATION},
+                    REQUEST_LOCATION_PERMISSION);
         }
     }
 
-    public void stopTracker(Writer writer) {
+    public void stopTracker() {
 
         try {
-            if (writer != null) {
-                writer.close();
-            }
+            FileWriter fileWriter = new FileWriter(GPS, true);
+            BufferedWriter writer = new BufferedWriter(fileWriter);
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -152,60 +174,39 @@ public class Track extends AppCompatActivity implements View.OnClickListener {
     }
 
     public void updateFile(Location location) {
-        String locationInformation = location.toString();
+        String latitude = location.convert(location.getLatitude(), location.FORMAT_DEGREES);
+        String Longitude = location.convert(location.getLongitude(), Location.FORMAT_DEGREES);
 
-        writer = null;
-        //create a new folder which will be our filepath for our GPX fike
-        GPS = new File(getExternalFilesDir(null).getAbsolutePath() + folder);
+
+
+
         try {
+            GPS = new File(this.getExternalFilesDir(null) + " \\GPStracks ", System.currentTimeMillis() +".txt");
+
+            //if path doesn't exist, create it
+            //create a new folder which will be our filepath for our GPX file
             if (!GPS.exists()) {
                 GPS.mkdirs();
             }
-            File f = new File(GPS, "17-01-21 8:43pm.gpx");
+            FileWriter fileWriter = new FileWriter(GPS, true);
+            BufferedWriter writer = new BufferedWriter(fileWriter);
+            writer.append("Location" + location);
+            //writer.append("Latitude: " + latitude);
+            writer.newLine();
+            Log.i("File save", "Saved ");
 
-
-            FileWriter fileWriter = new FileWriter(f, true);
-            writer = new BufferedWriter(fileWriter);
-            while (writer != null) {
-                writer.append(header);
-                writer.append(locationInformation);
-                Log.i("File save", "Saved ");
-
-            }
         } catch (IOException e) {
             Log.e("File Save", "Error Writing Path");
         }
 
     }
+    public static Track getInstance()
+    {
+        if (tracker == null)
+            tracker = new Track();
 
-    public void updateUI() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                locateClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        if (location != null) {
-
-                            lat = location.getLatitude();
-                            lon = location.getLongitude();
-                            alt = location.getAltitude();
-                            time = location.getTime();
-
-                            speed.setText(": " + location.getSpeed());
-                            timeTaken.setText(": " + time);
-                            altitude.setText(": " + alt);
-                            distance.setText(": ");
-
-
-
-                        } else {
-                            ActivityCompat.requestPermissions(Track.this, new String[]
-                                            {Manifest.permission.ACCESS_FINE_LOCATION},
-                                    REQUEST_LOCATION_PERMISSION);
-                        }
-                    }
-                });
-            }
-            return;
-        }
-
+        return tracker;
+    }
 }
+
+

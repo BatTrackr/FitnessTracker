@@ -13,6 +13,13 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+
+        <TextView
+            android:id="@+id/Location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Location" />
+
         <TextView
             android:id="@+id/Speed"
             android:layout_marginTop="20dp"
@@ -30,7 +37,14 @@
             android:text="Time Taken" />
 
         <TextView
-            android:id="@+id/Alt"
+            android:id="@+id/MinAlt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:layout_marginTop="20dp"
+            android:text="Altitude" />
+        <TextView
+            android:id="@+id/MaxAlt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
@@ -49,6 +63,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Track" />
+        <com.example.caassandra_lee_2939561_exercisetracker.Calculate
+
+            android:id="@+id/Graph"
+            android:layout_height="300dp"
+            android:layout_width="match_parent" />
 
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
